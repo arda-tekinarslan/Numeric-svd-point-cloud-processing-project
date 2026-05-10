@@ -12,8 +12,7 @@ pointsTarget = np.asarray(pcdTarget.points)
 
 pcdTarget.paint_uniform_color([0, 0, 1])
 pcdInit.paint_uniform_color([1, 0, 0])
-
-o3d.visualization.draw_geometries([pcdTarget, pcdInit])
+o3d.visualization.draw_geometries([pcdTarget, pcdInit])  # initial state
 
 kNearTree = KDTree(pointsTarget)
 maxIter = 30
@@ -39,6 +38,7 @@ def kabsch(P, Q):
     return R, t
 
 
+prev_err = 0
 for i in range(maxIter):
     distances, indices = kNearTree.query(pointsInit, k=1)
 
@@ -46,8 +46,12 @@ for i in range(maxIter):
     R, t = kabsch(neighbors, pointsInit)
     pointsInit = (pointsInit @ R.T) + t
 
-    avgerror = np.mean(distances)
+    # track RMSE between matched pairs as convergence criterion
+    avgerror = np.sqrt(np.mean(distances**2))
     print(f"Iteration:{i+1},Average Error:{avgerror:.4f}")
+    if i > 0 and abs(prev_err - avgerror) < 1e-7:
+        break
+    prev_err = avgerror
 
 pcdInit.points = o3d.utility.Vector3dVector(pointsInit)
 

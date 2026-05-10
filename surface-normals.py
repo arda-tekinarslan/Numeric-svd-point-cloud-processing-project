@@ -9,7 +9,7 @@ points = np.asarray(pcd.points)
 normalVecs = np.zeros(points.shape)
 
 kNearTree = KDTree(points)
-kNum = 100
+kNum = 30
 centroid = np.mean(points, axis=0)
 
 for i in range(points.shape[0]):
@@ -19,8 +19,9 @@ for i in range(points.shape[0]):
 
     meanCentre = np.mean(neighbors, axis=0)
     centredNeigbors = neighbors - meanCentre
+    N = centredNeigbors.shape[0]
 
-    neighborCov = centredNeigbors.T @ centredNeigbors
+    neighborCov = (centredNeigbors.T @ centredNeigbors) / (N-1)
     U, E, Vt = full_svd(neighborCov)
     normalVecs[i] = Vt[-1]  # Smallest sigma last row vector of Vt
 

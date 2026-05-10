@@ -3,14 +3,14 @@ import open3d as o3d
 from svd import full_svd
 
 
-pcd = o3d.io.read_point_cloud("data/pca/table_noisy.pcd")  # Read data
+pcd = o3d.io.read_point_cloud("data/pca/box_5_noisy.pcd")  # Read data
 points = np.asarray(pcd.points)  # Use as matrix
 
 meanCentre = np.mean(points, axis=0)  # Mean of every colum
 # Now points centered (0,0) PCA works according to origin
 centeredPoints = points - meanCentre
-
-covariance = centeredPoints.T @ centeredPoints  # Calculating covariance
+N = centeredPoints.shape[0]
+covariance = (centeredPoints.T @ centeredPoints) / (N-1)
 U, E, Vt = full_svd(covariance)
 
 principleCom = Vt
@@ -73,17 +73,13 @@ o3d.visualization.draw_geometries([pcd, obb_lineset, aabb_lineset])
 
 
 def sampling(corners, edges, num_points=100):
+    times = np.linspace(0, 1, num_points)[:, np.newaxis]
     sampledPoints = []
     for edge in edges:
         p1 = corners[edge[0]]
         p2 = corners[edge[1]]
-
-    # Make it column vector ask to the asistant
-    times = np.linspace(0, 1, num_points)[:, np.newaxis]
-    points = p1 + times * (p2-p1)
-    # Extend do it one by one not all together within a list
-    sampledPoints.extend(points)
-
+        points = p1 + times * (p2 - p1)
+        sampledPoints.extend(points)
     return np.array(sampledPoints)
 
 
@@ -102,5 +98,5 @@ aabb_pcd.paint_uniform_color([1, 0, 0])
 # Merge both of them
 mergedPoints = aabb_pcd + obb_pcd + pcd
 
-o3d.io.write_point_cloud("output/deneme3.pcd", mergedPoints)
+o3d.io.write_point_cloud("output/box5.pcd", mergedPoints)
 print("Points sampled and saved")
