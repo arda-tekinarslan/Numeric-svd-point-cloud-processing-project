@@ -17,7 +17,9 @@ for i in range(points.shape[0]):
 
     meanCentre = np.mean(neighbors, axis=0)
     centredNeighbors = neighbors - meanCentre
-    U, E, Vt = full_svd(centredNeighbors)  # E is 3x3 matrix
+    N = centredNeighbors.shape[0]
+    neighborCov = (centredNeighbors.T @ centredNeighbors) / (N-1)
+    U, E, Vt = full_svd(neighborCov)  # E is 3x3 matrix
 
     eigen1 = E[0, 0]
     eigen2 = E[1, 1]

@@ -44,8 +44,7 @@ def deflation(A):
 
 
 def full_svd(A):
-    N = A.shape[0]
-    X = (A.T @ A) / (N-1)
+    X = A.T @ A
     pcaPairs = deflation(X)
     pcaPairs.sort(key=lambda x: x[0], reverse=True)
     nRows = A.shape[0]

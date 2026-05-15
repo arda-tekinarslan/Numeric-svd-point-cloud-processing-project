@@ -19,7 +19,10 @@ for i in range(points.shape[0]):
 
     meanCentre = np.mean(neighbors, axis=0)
     centredNeigbors = neighbors - meanCentre
-    U, E, Vt = full_svd(centredNeigbors)
+    N = centredNeigbors.shape[0]
+    neighborCov = (centredNeigbors.T @ centredNeigbors) / (N-1)
+
+    U, E, Vt = full_svd(neighborCov)
     normalVecs[i] = Vt[-1]  # Smallest sigma last row vector of Vt
 
     if (np.dot(points[i] - centroid, normalVecs[i]) < 0):

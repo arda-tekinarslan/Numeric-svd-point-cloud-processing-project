@@ -9,7 +9,9 @@ points = np.asarray(pcd.points)  # Use as matrix
 meanCentre = np.mean(points, axis=0)  # Mean of every colum
 # Now points centered (0,0) PCA works according to origin
 centeredPoints = points - meanCentre
-U, E, Vt = full_svd(centeredPoints)
+N = centeredPoints.shape[0]
+covariance = (centeredPoints.T @ centeredPoints) / (N-1)
+U, E, Vt = full_svd(covariance)
 principleCom = Vt
 
 # Projected to the principle components

@@ -15,7 +15,7 @@ pcdInit.paint_uniform_color([1, 0, 0])
 o3d.visualization.draw_geometries([pcdTarget, pcdInit])  # initial state
 
 kNearTree = KDTree(pointsTarget)
-maxIter = 30
+maxIter = 50
 
 # Transform Q to P
 
@@ -48,8 +48,8 @@ for i in range(maxIter):
 
     # track RMSE between matched pairs as convergence criterion
     avgerror = np.sqrt(np.mean(distances**2))
-    print(f"Iteration:{i+1},Average Error:{avgerror:.4f}")
-    if i > 0 and abs(prev_err - avgerror) < 1e-7:
+    print(f"Iteration:{i+1},Average Error:{avgerror:.6f}")
+    if i > 0 and abs(prev_err - avgerror) < 1e-6:
         break
     prev_err = avgerror
 
